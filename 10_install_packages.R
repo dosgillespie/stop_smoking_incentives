@@ -14,7 +14,7 @@ packages <- c("data.table", "ggplot2", "devtools", "cowplot", "readxl", "knitr",
               "readr", "bit64", "writexl", "Rfast", "dvmisc", "fastmatch", "dplyr", "plyr", "openxlsx", "raster", "mice", "Hmisc",
               "nnet", "quantmod", "Matrix", "codetools", "nlme", "tibble", "ggthemes", "foreign", "splines", "broom", "survey", "ggsci", 
               "shiny", "tidyverse", "gt", "extrafont", "forcats", "snakecase", "paletteer", "scales", "ggtext", "car", "plotly", "StatMatch",
-              "ggpubr", "seecolor", "gganimate", "nnet", "colorspace")
+              "ggpubr", "seecolor", "gganimate", "nnet", "colorspace", "mice", "reformulas")
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())

@@ -32,6 +32,8 @@ nrow(data_u)
 
 summary(data_i)
 
+# 775 / nrow(data_i)
+
 # Missing data imputation
 # impute data_i
 
@@ -41,40 +43,63 @@ summary(data_i)
 # FagerstromScore
 # EligibleForFreeNHSPrescriptions
 
+imp <- mice(data_i, maxit = 0, seed = 1995)
+
+pred3 <- imp$predictorMatrix
+pred3[ , c("Quit4w")] <- 0
+pred3[ , c("Quit4wCO")] <- 0
+pred3[ , c("Quit4wLTF")] <- 0
+pred3[ , c("Quit8w")] <- 0
+pred3[ , c("Quit8wCO")] <- 0
+pred3[ , c("Quit8wLTF")] <- 0
+pred3[ , c("Quit12w")] <- 0
+pred3[ , c("Quit12wCO")] <- 0
+pred3[ , c("Quit12wLTF")] <- 0
+pred3[ , c("RegistrationDate")] <- 0
+pred3[ , c("ReferralDate")] <- 0
+pred3[ , c("QuitDate")] <- 0
+pred3[ , c("AgentID")] <- 0
+pred3[ , c("elig_bin")] <- 0
+pred3[ , c("client_bin")] <- 0
+pred3[ , c("nSessions")] <- 0
+pred3[ , c("pUseOfNRTorOtherNonEcig")] <- 0
+pred3[ , c("pECigUse")] <- 0
+
+meth3 <- imp$method
+meth3[c("Quit4w")] <- ""
+meth3[c("Quit4wCO")] <- ""
+meth3[c("Quit4wLTF")] <- ""
+meth3[c("Quit8w")] <- ""
+meth3[c("Quit8wCO")] <- ""
+meth3[c("Quit8wLTF")] <- ""
+meth3[c("Quit12w")] <- ""
+meth3[c("Quit12wCO")] <- ""
+meth3[c("Quit12wLTF")] <- ""
+meth3[c("RegistrationDate")] <- ""
+meth3[c("ReferralDate")] <- ""
+meth3[c("QuitDate")] <- ""
+meth3[c("AgentID")] <- ""
+meth3[c("elig_bin")] <- ""
+meth3[c("client_bin")] <- ""
+meth3[c("nSessions")] <- ""
+meth3[c("pUseOfNRTorOtherNonEcig")] <- ""
+meth3[c("pECigUse")] <- ""
+
+imp <- mice(data_i, m = 30, predictorMatrix = pred3, method = meth3, seed = 1995)
+imp2 <- complete(imp, 'long', include = FALSE)
+
+data_i_imp <- setDT(imp2)
+
+# Eligible for scheme
+data_e <- copy(data_i_imp[elig_bin == TRUE])
+
+# Took up the scheme
+data_u <- copy(data_i_imp[client_bin == TRUE])
 
 
-
-
-
-
-
-summary_data <- data_i[ , .(Referred = .N, 
-                            Registered = .N * mean(reg_bin), 
-                            Eligible = .N * mean(elig_bin), 
-                            Client = .N * mean(client_bin)), by = c("ref_month_year")]
-
-write.csv(summary_data, "30_figures_and_tables/service_uptake.csv", row.names = F)
-
-###
-# Now select only eligible and look at differences in uptake by subgroup
-
-data_e <- data_i[elig_bin == 1]
-
-start_date <- min(data_e[client_bin == 1, `Referral Date`])
-end_date <- max(data_e[client_bin == 1, `Referral Date`])
-
-data_e <- data_e[`Referral Date` <= end_date & `Referral Date` >= start_date]
-
-summary1 <- data_e[ , .(client = length(client_bin[client_bin == 1]), not_client = length(client_bin[client_bin == 0])), 
-                    by = c("Social Housing", "Mental Health")]
-summary1[ , prop := client / (client + not_client)]
-summary1[c(4, 2, 1, 3)]
-
-
-summary2 <- data_e[ , .(client = length(client_bin[client_bin == 1]), not_client = length(client_bin[client_bin == 0])), 
-                    by = c("Occupation")]
-summary2[ , prop := client / (client + not_client)]
-
+saveRDS(data_i_imp, "20_intermediate_data/cleaned_data.rds")
+saveRDS(data_e, "20_intermediate_data/cleaned_data_eligible.rds")
+saveRDS(data_u, "20_intermediate_data/cleaned_data_uptake.rds")
 
 
 
