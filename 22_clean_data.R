@@ -92,7 +92,7 @@ data_i[, `Referrer Name` := NULL]
 
 # Age
 data_i <- data_i[AgeAtRegistration >= 18 & AgeAtRegistration < 100]
-data_i[ , age_cat := c(1, 2, 3, 4)[findInterval(AgeAtRegistration, c(-1, 5, 45, 60, 1000))]]
+data_i[ , age_cat := c(1, 2, 3, 4)[findInterval(AgeAtRegistration, c(-1, 5, 45, 55, 1000))]]
 
 #data_i[ , .(AgeAtRegistration, age_cat)]
 
@@ -120,10 +120,9 @@ data_i[ , Ethnicity := NULL]
 data_i[Occupation == "Declined", Occupation := NA]
 
 data_i[Occupation == "Routine & manual", pOccupation := 1]
-data_i[Occupation == "Retired", pOccupation := 2]
-data_i[Occupation == "Sick/disabled and unable to work", pOccupation := 3]
-data_i[Occupation == "Never worked/long term unemployed", pOccupation := 4]
-data_i[!is.na(Occupation) & is.na(pOccupation), pOccupation := 5]
+data_i[Occupation == "Sick/disabled and unable to work", pOccupation := 2]
+data_i[Occupation == "Never worked/long term unemployed", pOccupation := 3]
+data_i[!is.na(Occupation) & is.na(pOccupation), pOccupation := 4]
 
 table(data_i$pOccupation, useNA = "ifany")
 data_i[ , Occupation := NULL]
@@ -139,11 +138,8 @@ data_i[`Mental Health` == "No", pMentalHealthCondition := 0]
 data_i[ , `Mental Health` := NULL]
 
 # Deprivation
-data_i[`IMD Decile` %in% c(9, 10), pIMDquintile := 1]
-data_i[`IMD Decile` %in% c(7, 8), pIMDquintile := 2]
-data_i[`IMD Decile` %in% c(5, 6), pIMDquintile := 3]
-data_i[`IMD Decile` %in% c(3, 4), pIMDquintile := 4]
-data_i[`IMD Decile` %in% c(1, 2), pIMDquintile := 5]
+data_i[`IMD Decile` %in% c(3:10), pIMDquintile := 0]
+data_i[`IMD Decile` %in% c(1, 2), pIMDquintile := 1]
 data_i[, `IMD Decile` := NULL]
 
 table(data_i$pIMDquintile, useNA = "ifany")
