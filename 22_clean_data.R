@@ -219,6 +219,25 @@ setnames(data_i, "Number of Sessions Attended", "nSessions")
 
 # Quitting
 
+# Backfill missing information
+
+data_i[`12 Week Quit Status` == "Quit", `:=`(`4 Week Quit Status` = "Quit", `8 Week Quit Status` = "Quit")]
+data_i[`8 Week Quit Status` == "Quit", `:=`(`4 Week Quit Status` = "Quit")]
+
+data_i[`4 Week Quit Status` == "Not Quit", `:=`(`8 Week Quit Status` = "Not Quit", `12 Week Quit Status` = "Not Quit")]
+data_i[`8 Week Quit Status` == "Not Quit", `:=`(`12 Week Quit Status` = "Not Quit")]
+
+data_i[`4 Week Quit Status` == "Lost to Follow Up", `:=`(`8 Week Quit Status` = "Lost to Follow Up", `12 Week Quit Status` = "Lost to Follow Up")]
+data_i[`8 Week Quit Status` == "Lost to Follow Up", `:=`(`12 Week Quit Status` = "Lost to Follow Up")]
+
+data_i[is.na(`12 Week Quit Status`), `:=`(`12 Week Quit Status` = "Lost to Follow Up")]
+data_i[`12 Week Quit Status` == "Lost to Follow Up" & is.na(`8 Week Quit Status`), `:=`(`8 Week Quit Status` = "Lost to Follow Up")]
+
+data_i[`12 Week Quit Status` == "Not Quit" & is.na(`8 Week Quit Status`), `:=`(`8 Week Quit Status` = "Not Quit")]
+
+data_i[`8 Week Quit Status` == "Lost to Follow Up" & is.na(`4 Week Quit Status`), `:=`(`4 Week Quit Status` = "Lost to Follow Up")]
+
+
 data_i[`4 Week Quit Status` == "Quit", Quit4w := 1]
 data_i[`4 Week Quit Status` == "Not Quit", Quit4w := 0]
 data_i[`4 Week CO Valid Quit` == "Yes", Quit4wCO := 1]
