@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 format: docx
 editor: visual
 execute: 
@@ -69,3 +70,28 @@ Not all clients had data recorded at each of the 4, 8 and 12 week monitoring poi
 ### Analysis
 
 These service data were analysed descriptively, showing how the percentages of clients achieving 4, 8 and 12 week quits varied with and without incentives, and how the effect of incentives varied by key client characteristics.
+=======
+title: "Smoking Cessation Incentive Scheme for Priority Groups: Quantitative analysis"
+format: docx
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+setwd("C:/Users/cm1dog/Documents")
+
+library(tidyverse)
+library(data.table)
+library(gt)
+library(scales)
+library(ggpubr)
+#library(extrafont)
+library(readxl)
+
+
+```
+
+Figure 1. Price cap policies
+>>>>>>> cabb5b7aef963c15e494d75ae0095dae69f049fc
