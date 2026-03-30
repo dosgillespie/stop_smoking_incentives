@@ -6,6 +6,82 @@ data_i <- readRDS("20_intermediate_data/cleaned_data.rds")
 
 nrow(data_i) # 5977
 
+# Date range of registration by people who became clients of the scheme
+nrow(data_i[client_bin == 1])
+range(data_i[client_bin == 1, RegistrationDate], na.rm = T)
+
+min_date <- min(data_i[client_bin == 1, RegistrationDate], na.rm = T)
+max_date <- max(data_i[client_bin == 1, RegistrationDate], na.rm = T)
+
+data_i <- data_i[RegistrationDate >= min_date & RegistrationDate <= max_date]
+
+nrow(data_i)
+
+nrow(data_i[elig_bin == 1])
+nrow(data_i[elig_bin == 1]) / nrow(data_i)
+
+nrow(data_i[client_bin == 1])
+nrow(data_i[client_bin == 1]) / nrow(data_i[elig_bin == 1])
+
+data_i[client_bin == 1, .N, by = "reg_month_num"]
+
+data_i[elig_bin == 1, .N, by = "pGender"]
+data_i[client_bin == 1, .N, by = "pGender"]
+
+nrow(data_i[elig_bin == 1 & client_bin == 0])
+nrow(data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate)])
+
+data_i[elig_bin == 1 & client_bin == 0, .N]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pGender"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pGender"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "age_cat"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "age_cat"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pIMDquintile"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pIMDquintile"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pEthnicity"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pEthnicity"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pOccupation"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pOccupation"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pSocialHousing"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pSocialHousing"]
+
+data_i[elig_bin == 1 & client_bin == 0, .N, by = "pMentalHealthCondition"]
+data_i[elig_bin == 1 & client_bin == 0 & !is.na(QuitDate), .N, by = "pMentalHealthCondition"]
+
+
+# table 5
+
+ni <- data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate), .N]
+data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit4w == 1, .N] / ni
+data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit8w == 1, .N] / ni
+data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit12w == 1, .N] / ni
+
+name_by = "pMentalHealthCondition"
+ni <- data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate), .N, by = name_by]
+ni <- merge(ni, data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit4w == 1, .(x4w = .N), by = name_by], by = name_by, all.x = T, all.y = T)
+ni <- merge(ni, data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit8w == 1, .(x8w = .N), by = name_by], by = name_by, all.x = T, all.y = T)
+ni <- merge(ni, data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit12w == 1, .(x12w = .N), by = name_by], by = name_by, all.x = T, all.y = T)
+ni[ , p4w := round(100* x4w / N, 0)]
+ni[ , p8w := round(100 * x8w / N, 0)]
+ni[ , p12w := round(100 * x12w / N, 0)]
+ni
+
+
+
+100* nrow(data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit12w == 1 & Quit12wCO == 1]) /
+nrow(data_i[elig_bin == 1 & client_bin == 1 & !is.na(QuitDate) & Quit12w == 1])
+
+
+
+
+
 # Eligible for scheme
 data_e <- copy(data_i[elig_bin == TRUE])
 

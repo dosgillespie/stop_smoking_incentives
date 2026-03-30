@@ -14,7 +14,17 @@ data_i[is.na(`Registration Date`), reg_bin := 0]
 data_i[!is.na(`Registration Date`), reg_bin := 1]
 
 data_i[ , RegistrationDate := as.Date(`Registration Date`, format = "%d/%m/%Y")]
+data_i[ , reg_month_year := format(RegistrationDate, "%Y-%m")]
 data_i[ , `Registration Date` := NULL]
+
+data_i[reg_month_year == "2024-10", reg_month_num := 1]
+data_i[reg_month_year == "2024-11", reg_month_num := 2]
+data_i[reg_month_year == "2024-12", reg_month_num := 3]
+data_i[reg_month_year == "2025-01", reg_month_num := 4]
+data_i[reg_month_year == "2025-02", reg_month_num := 5]
+data_i[reg_month_year == "2025-03", reg_month_num := 6]
+
+data_i[ , reg_month_year := NULL]
 
 data_i[ , QuitDate := as.Date(`Quit Date`, format = "%d/%m/%Y")]
 data_i[ , `Quit Date` := NULL]
@@ -101,7 +111,8 @@ data_i[ , AgeAtRegistration := NULL]
 # Gender
 data_i[Gender == "Male", pGender := 1]
 data_i[Gender == "Female", pGender := 2]
-data_i <- data_i[!is.na(pGender)]
+data_i[!is.na(Gender) & is.na(pGender), pGender := 3]
+#data_i <- data_i[!is.na(pGender)]
 data_i[ , Gender := NULL]
 
 #table(data_i$pGender, useNA = "ifany")

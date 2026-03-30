@@ -1,0 +1,71 @@
+---
+format: docx
+editor: visual
+execute: 
+  echo: false
+  warning: false
+  message: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| include: false
+
+library(data.table)
+library(tidyverse)
+library(gt)
+library(extrafont)
+library(forcats)
+library(snakecase)
+library(paletteer)
+library(scales)
+library(ggtext)
+library(readxl)
+
+#Need to run this line of code once on each machine in order to import the fonts needed to render the outputs into R, but should work without it as many times as you like thereafter
+
+font_import()
+
+options(scipen=99999999)
+
+#Set theme for all plots
+font <- "Lato"
+
+theme_custom <- function() {
+  theme_classic() %+replace%
+    theme(plot.title.position="plot", plot.caption.position="plot",
+          strip.background=element_blank(), strip.text=element_text(face="bold", size=rel(1)),
+          plot.title=element_text(face="bold", size=rel(1.5), hjust=0,
+                                  margin=margin(0,0,5.5,0)),
+          text=element_text(family=font),
+          plot.subtitle=element_text(colour="Grey40", hjust=0, vjust=1),
+          plot.caption=element_text(colour="Grey40", hjust=1, vjust=1, size=rel(0.8)),
+          axis.text=element_text(colour="Grey40"),
+          axis.title=element_text(colour="Grey20"),
+          legend.text=element_text(colour="Grey40"),
+          legend.title=element_text(colour="Grey20"))
+}
+
+
+```
+
+## Methods
+
+### Data
+
+Existing quantitative data were used to explore service monitoring and outcome measures. The data were provided by the NHS Yorkshire Smokefree Service, delivered by South West Yorkshire Foundation Trust.
+
+Data were provided on each registration with the service from 08/05/2024 to 31/07/2025. Only people aged 18+ were included (n = 5,977). Clients who took up the incentives were registered with the service from 23/10/2024 to 28/03/2025 (n = 515). In that period, the total number of registrations with the service was 2,539, with 970 eligible to be offered incentives.
+
+Staff from the NHS Yorkshire Smokefree Service recorded scheme eligibility and scheme uptake (becoming a client) in the QuitManager data system at the point a client was registered with the service. All eligible clients were offered the incentive scheme at the point of registration. Those who declined incentives were still registered as clients with the service and received the usual support and medication.
+
+For this analysis, the key characteristics of clients used were whether they reported having a routine & manual occupation, being resident in social housing or having a mental health condition. 
+
+If clients receiving service support went on to make an attempt to quit smoking, the date marking the start of this quit attempt for monitoring purposes was recorded. The service then aimed to follow-up clients at 4, 8 and 12 weeks to record whether they were “Quit”, “Not Quit” or “Lost to follow-up”. Whether or not a recorded quit was CO validated was also recorded.
+
+Not all clients had data recorded at each of the 4, 8 and 12 week monitoring points; we therefore used the available data to infer quit status at each point. In doing so, we made conservative assumptions e.g. if data at 8 weeks was missing, but data at 12 weeks indicated “Not Quit”, then we assumed that the status at 8 weeks was also “Not Quit”.
+
+### Analysis
+
+These service data were analysed descriptively, showing how the percentages of clients achieving 4, 8 and 12 week quits varied with and without incentives, and how the effect of incentives varied by key client characteristics.
