@@ -1,0 +1,24 @@
+---
+title: "Smoking Cessation Incentive Scheme for Priority Groups: Quantitative analysis"
+format: docx
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+setwd("C:/Users/cm1dog/Documents")
+
+library(tidyverse)
+library(data.table)
+library(gt)
+library(scales)
+library(ggpubr)
+#library(extrafont)
+library(readxl)
+
+
+```
+
+Figure 1. Price cap policies
