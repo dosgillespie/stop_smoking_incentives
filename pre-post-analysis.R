@@ -223,22 +223,19 @@ fwrite(final_subgroup_table, "X:/HAR_WG/WG/Sheff_Incentive_Evaluation/Quantitati
 # -------------------------------------------------------------------------
 # VISUALISATION: 12-Week Quit Rates (Original vs. ITT Approach Combined)
 # -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-# VISUALISATION: 12-Week Quit Rates (Original vs. ITT Approach Combined)
-# -------------------------------------------------------------------------
 library(ggplot2)
 library(data.table)
 
-# 1. Define the 7 precise target groups based on your report tables
+# 1. Define the 6 precise target groups (Ethnicity removed)
 target_groups <- c("pSocialHousing", "pMentalHealthCondition", "pIMDquintile", 
-                   "pEthnicity", "pOccupation", "pOccupation", "pOccupation")
+                   "pOccupation", "pOccupation", "pOccupation")
 
 # 1 = Social Housing, 1 = Mental Health, 1 = IMD Q1 (Deciles 1&2), 
-# 0 = Non-White, 1 = Routine/Manual, 2 = Sick/Disabled, 3 = Long-Term Unemployed
-target_values <- c(1, 1, 1, 0, 1, 2, 3) 
+# 1 = Routine/Manual, 2 = Sick/Disabled, 3 = Long-Term Unemployed
+target_values <- c(1, 1, 1, 1, 2, 3) 
 
 group_labels <- c("Social Housing", "Mental Health", "Most Deprived\n(IMD Quintile)", 
-                  "Non-White\nEthnicity", "Routine &\nManual", "Sick or\nDisabled", "Long-Term\nUnemployed")
+                  "Routine &\nManual", "Sick or\nDisabled", "Long-Term\nUnemployed")
 
 # 2. Dynamically calculate the rates for the 3 BARS (Baseline, Pilot: No Inc, Pilot: Accepted Inc)
 bar_data_list <- list()
@@ -252,7 +249,7 @@ for (i in 1:length(target_groups)) {
   # Filter to the specific demographic
   sub_data <- data_elig[!is.na(get(col)) & get(col) == val]
   
-  # Calculate the 3 Bars
+  # Calculate the 3 Bars (Rounded to 0 decimal places)
   bars <- sub_data[, .(
     Total = .N,
     Quit = sum(Quit12w, na.rm = TRUE)
@@ -264,16 +261,16 @@ for (i in 1:length(target_groups)) {
     cohort == "2_Pilot_Period" & client_bin == 0, "2. Pilot: Did Not Accept",
     cohort == "2_Pilot_Period" & client_bin == 1, "3. Pilot: Accepted Incentive"
   )]
-  bars[, Rate := round((Quit / Total) * 100, 1)]
+  bars[, Rate := round((Quit / Total) * 100, 0)]
   bar_data_list[[i]] <- bars[!is.na(Plot_Category)]
   
-  # Calculate the Pilot ITT Average (The Gold Diamond Point)
+  # Calculate the Pilot ITT Average (Rounded to 0 decimal places)
   pilot_itt <- sub_data[cohort == "2_Pilot_Period", .(
     Total = .N,
     Quit = sum(Quit12w, na.rm = TRUE)
   )]
   pilot_itt[, Group := label]
-  pilot_itt[, ITT_Rate := round((Quit / Total) * 100, 1)]
+  pilot_itt[, ITT_Rate := round((Quit / Total) * 100, 0)]
   point_data_list[[i]] <- pilot_itt
 }
 
@@ -285,25 +282,26 @@ plot_data[, Group := factor(Group, levels = group_labels)]
 plot_data[, Plot_Category := factor(Plot_Category, levels = c("1. Pre-Scheme Baseline", "2. Pilot: Did Not Accept", "3. Pilot: Accepted Incentive"))]
 point_data[, Group := factor(Group, levels = group_labels)]
 
-# 3. Generate the combined plot
+# 3. Generate the combined plot (Optimised for Word format)
 equity_plot <- ggplot() +
   # Draw the 3 bars
   geom_bar(data = plot_data, aes(x = Group, y = Rate, fill = Plot_Category), 
            stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
   
-  # Add text labels to the bars
+  # Add text labels to the bars (Size increased for Word readability)
   geom_text(data = plot_data, aes(x = Group, y = Rate, label = paste0(Rate, "%"), group = Plot_Category), 
-            position = position_dodge(width = 0.8), vjust = -0.5, size = 3.5, fontface = "bold") +
+            position = position_dodge(width = 0.8), vjust = -0.6, size = 4.5, fontface = "bold") +
   
   # Add the Pilot ITT Average as a Gold Diamond, nudged slightly right
   geom_point(data = point_data, aes(x = Group, y = ITT_Rate, color = "Pilot ITT Average"), 
-             shape = 18, size = 5, position = position_nudge(x = 0.26)) +
+             shape = 18, size = 6, position = position_nudge(x = 0.26)) +
   
   # Add a text label for the diamond
   geom_text(data = point_data, aes(x = Group, y = ITT_Rate, label = paste0(ITT_Rate, "%")), 
-            position = position_nudge(x = 0.26), vjust = -1.5, size = 3.5, fontface = "bold", color = "#F57F17") +
+            position = position_nudge(x = 0.26), vjust = -1.6, size = 4.5, fontface = "bold", color = "#F57F17") +
   
-  theme_minimal(base_size = 14) +
+  # Increased base_size to 16 so the text doesn't look tiny when scaled down in Word
+  theme_minimal(base_size = 16) +
   scale_fill_manual(values = c("1. Pre-Scheme Baseline" = "#B0BEC5", 
                                "2. Pilot: Did Not Accept" = "#90CAF9", 
                                "3. Pilot: Accepted Incentive" = "#1565C0")) +
@@ -313,15 +311,16 @@ equity_plot <- ggplot() +
        fill = "", color = "") +
   theme(legend.position = "top",
         legend.box = "vertical",
-        legend.margin = margin(t = 0, r = 0, b = 10, l = 0),
+        legend.margin = margin(t = 0, r = 0, b = 15, l = 0),
+        legend.text = element_text(size = 13),
         panel.grid.major.x = element_blank(),
-        # Rotate text slightly to comfortably fit all 7 categories
-        axis.text.x = element_text(face = "bold", color = "#333333", angle = 15, hjust = 0.5)) +
-  scale_y_continuous(limits = c(0, 80)) # Expanded Y-axis to fit text labels
+        axis.text.x = element_text(face = "bold", color = "#333333", angle = 0, hjust = 0.5, size = 13)) +
+  scale_y_continuous(limits = c(0, 85)) # Expanded Y-axis slightly to ensure top labels don't get cut off
 
 print(equity_plot)
-ggsave("X:/HAR_WG/WG/Sheff_Incentive_Evaluation/Quantitative component/Data/Equity_BarChart_Combined_AllGroups.png", 
-       plot = equity_plot, width = 13, height = 7, dpi = 300)
+# Save with 600 dpi for ultra-crisp rendering in Microsoft Word
+ggsave("X:/HAR_WG/WG/Sheff_Incentive_Evaluation/Quantitative component/Data/Equity_BarChart_Word_Ready.png", 
+       plot = equity_plot, width = 11, height = 6.5, dpi = 600)
 
 
 # -------------------------------------------------------------------------
